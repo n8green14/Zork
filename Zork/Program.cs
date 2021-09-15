@@ -5,7 +5,7 @@ namespace Zork
 {
     class Program
     {
-        private static string CurrentRoom
+        private static Room CurrentRoom
         {
             get
             {
@@ -13,25 +13,12 @@ namespace Zork
             }
         }
 
-        public static class Assert
-        {
-            public static void IsTrue(bool expression, string message = null)
-            {
-                if (expression == false)
-                {
-                    throw new Exception(message);
-                }
-            }
-            
-
-        }
-
         static void Main(string[] args)
         {
             Console.WriteLine("Welcome to Zork!");
 
-            Commands command =  Commands.UNKNOWN;   
-            while (command != Commands.QUIT) 
+            Commands command = Commands.UNKNOWN;
+            while (command != Commands.QUIT)
             {
                 Console.WriteLine(CurrentRoom);
                 Console.WriteLine("> ");
@@ -102,11 +89,17 @@ namespace Zork
 
         private static bool IsDirection(Commands command) => Directions.Contains(command);
 
-        private static readonly string[,] Rooms = {
-            {  "Rocky Trail", "South of house", "Canyon view"},
-            { "Forest", "West of House", "Behind House" },
-            { "Dense Woods", "North of House", "Clearing" }
-           };
+        private static readonly Room[,] Rooms =
+        {
+            {new Room("Rocky Trail"), new Room("South of House"), new Room("Canyon View") },
+            {new Room("Forest"), new Room("West of House"), new Room("Behind House") },
+            {new Room("Dense Woods"), new Room("North of House"), new Room("Clearing") }
+        };
+
+        private static void InitializeRoomDescriptions()
+        {
+
+        }
 
         private static readonly List<Commands> Directions = new List<Commands>
         {
