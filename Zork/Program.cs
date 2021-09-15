@@ -4,11 +4,11 @@ namespace Zork
 {
     class Program
     {
-        private static string Location
+        private static string CurrentRoom
         {
             get
             {
-                return Rooms[LocationColumn];
+                return Rooms[Location.Row, Location.Column];
             }
         }
 
@@ -16,62 +16,64 @@ namespace Zork
         {
             Console.WriteLine("Welcome to Zork!");
 
-            while (true)
+            Commands command =  Commands.UNKNOWN;   
+            while (command != Commands.QUIT) 
             {
-                Console.Write($"{Location}\n> ");
-                Commands command = ToCommand(Console.ReadLine().Trim());
-                if (command == Commands.QUIT)
-                {
-                    break;
-                }
+                Console.WriteLine(CurrentRoom);
+                command = ToCommand(Console.ReadLine().Trim());
 
-                string outputString;
                 switch (command)
                 {
                     case Commands.QUIT:
-                        outputString = "Thank you for playing";
+                        Console.WriteLine("Thank you for playing");
                         break;
 
                     case Commands.LOOK:
-                        outputString = "This is an open field west of a white house, with a boarded front door. \nA rubber mat saying 'Welcome to Zork!' lies by the door.";
+                        Console.WriteLine("This is an open field west of a white house, with a boarded front door. \nA rubber mat saying 'Welcome to Zork!' lies by the door.");
                         break;
 
                     case Commands.NORTH:
                     case Commands.SOUTH:
                     case Commands.EAST:
                     case Commands.WEST:
-                        outputString = Move(command) ? $"You Moved {command}." : "The way is shut!";
-     
+                        Console.WriteLine(Move(command) ? $"You Moved {command}." : "The way is shut!");
+
                         break;
 
                     default:
-                        outputString = "Unrecognized command";
+                        Console.WriteLine("Unrecognized command");
                         break;
                 }
 
-                Console.WriteLine(outputString);
+                   // Console.WriteLine(CurrentRoom);
             }
 
             Console.WriteLine("Finished.");
         }
 
-        private static bool Move(Commands command) 
+        private static bool Move(Commands command)
         {
             bool didMove = false;
 
             switch (command)
             {
-                case Commands.NORTH:
-                case Commands.SOUTH:
-                    break;
-
-                case Commands.EAST when LocationColumn < Rooms.Length - 1:
-                    LocationColumn++;
+                case Commands.NORTH when Location.Row < Rooms.Length - 1:
+                    Location.Row++;
                     didMove = true;
                     break;
 
-                case Commands.WEST when LocationColumn > 0:
-                    LocationColumn--;
+                case Commands.SOUTH when Location.Row > 0:
+                    Location.Row--;
+                    didMove = true;
+                    break;
+
+                case Commands.EAST when Location.Column < Rooms.Length - 1:
+                    Location.Column++;
+                    didMove = true;
+                    break;
+
+                case Commands.WEST when Location.Column > 0:
+                    Location.Column--;
                     didMove = true;
                     break;
             }
@@ -81,8 +83,16 @@ namespace Zork
 
         private static Commands ToCommand(string commandString) => Enum.TryParse<Commands>(commandString, true, out Commands command) ? command : Commands.UNKNOWN;
 
-        private static string[] Rooms = { "Forest", "West of House", "Behind House", "Clearing", "Canyon View" };
-        private static int LocationColumn = 1;
+        private static readonly string[,] Rooms = {
+            {  "Rocky Trail", "South of house", "Canyon view"},
+            { "Forest", "West of House", "Behind House" },
+            { "Dense Woods", "North of House", "Clearing" }
+           };
+
+        //private static int LocationColumn = 1;
+        //private static int LocationRow = 1;
+
+        private static (int Row, int Column) Location = (1, 1);
 
     }
 }
