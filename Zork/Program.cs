@@ -20,8 +20,8 @@ namespace Zork
             Commands command = Commands.UNKNOWN;
             while (command != Commands.QUIT)
             {
-                Console.WriteLine(CurrentRoom);
-                Console.WriteLine("> ");
+
+                Console.WriteLine($"{CurrentRoom.Name}\n> ");
                 command = ToCommand(Console.ReadLine().Trim());
 
                 switch (command)
