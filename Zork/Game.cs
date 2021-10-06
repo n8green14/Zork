@@ -9,47 +9,44 @@ namespace Zork
     {
         public World World { get; set; }
 
-        public string StartingLocation { get; set; }
-
         [JsonIgnore]
         public Player Player { get; private set; }
 
         [JsonIgnore]
         private bool IsRunning { get; set; }
 
-        [OnDeserialized]
-        private void OnDeserialized(StreamingContext context)
+        public Game(World world, Player player)
         {
-            Player = new Player(World, StartingLocation); 
+            World = world;
+            Player = player;
         }
 
         public void Run()
         {
-            Console.WriteLine("Welcome to Zork!");
 
             IsRunning = true;
             Room previousRoom = null;
             while (IsRunning)
             {
-                Console.WriteLine(Player.CurrentRoom);
+                Console.WriteLine(Player.Location);
 
-                if (previousRoom != Player.CurrentRoom)
+                if (previousRoom != Player.Location)
                 {
-                    Console.WriteLine(Player.CurrentRoom.Description);
-                    previousRoom = Player.CurrentRoom;
+                    Console.WriteLine(Player.Location.Description);
+                    previousRoom = Player.Location;
                 }
 
-                Console.Write("> ");
+                Console.Write("\n> ");
                 Commands command = ToCommand(Console.ReadLine().Trim());
                  
                 switch (command)
                 {
                     case Commands.QUIT:
-                        Console.WriteLine("Thank you for playing");
+                        IsRunning = false;
                         break;
 
                     case Commands.LOOK:
-                        Console.WriteLine(Player.CurrentRoom.Description);
+                        Console.WriteLine(Player.Location.Description);
                         break;
 
                     case Commands.NORTH:
@@ -57,11 +54,12 @@ namespace Zork
                     case Commands.EAST:
                     case Commands.WEST:
 
-                        //if (Move(command) == false)
-                        //{
-                        //    Console.WriteLine("The way is shut!");
-                        //}
-                        //break;
+                        Directions direction = Enum.Parse<Directions>(command.ToString(), true);
+                        if (Player.Move(direction) == false)
+                        {
+                            Console.WriteLine("The way is shut!");
+                        }
+                        break;
 
                     default:
                         Console.WriteLine("Unrecognized command");
@@ -69,7 +67,14 @@ namespace Zork
                 }
             }
 
-            Console.WriteLine("Finished.");
+        }
+
+        public static Game Load(string filename)
+        {
+            Game game = JsonConvert.DeserializeObject<Game>(File.ReadAllText(filename));
+            game.Player = game.World.SpawnPlayer();
+
+            return game;
         }
         
         private static Commands ToCommand(string commandString) => Enum.TryParse<Commands>(commandString, true, out Commands command) ? command : Commands.UNKNOWN;

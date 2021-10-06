@@ -10,27 +10,14 @@ namespace Zork
     {
         static void Main(string[] args)
         {
-
             const string defaultGameFilename = "Zork.json";
             string gameFilename = (args.Length > 0 ? args[(int)CommandLineArguments.GameFilename] : defaultGameFilename);
-            Game game = JsonConvert.DeserializeObject<Game>(File.ReadAllText(gameFilename));
+
+            Game game = Game.Load(gameFilename);
+            Console.WriteLine("Welcome to Zork!");
             game.Run();
-
+            Console.WriteLine("Thank you for playing!");
         }
-
-        
-
-        //private static bool IsDirection(Commands command) => Directions.Contains(command);
-
-        
-
-        //private static readonly List<Commands> Directions = new List<Commands>
-        //{
-        //    Commands.NORTH,
-        //    Commands.SOUTH,
-        //    Commands.EAST,
-        //    Commands.WEST
-        //};
 
         private enum CommandLineArguments
         {
