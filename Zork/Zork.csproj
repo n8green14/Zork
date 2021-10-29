@@ -15,6 +15,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\ZorkCommon\ZorkCommon.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
     <None Update="Zork.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
